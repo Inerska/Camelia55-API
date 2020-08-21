@@ -1,4 +1,4 @@
-package main
+package users
 
 import (
 	"fmt"
@@ -8,14 +8,15 @@ import (
 )
 
 type Employee struct {
-	profilePic  string
-	fullName    string
-	mailAdress  string
-	description string
+	ProfilePic  string `json:"profile_pic"`
+	FullName    string `json:"full_name"`
+	MailAdress  string `json:"mail_adress"`
+	Description string `json:"description"`
 }
 
 func GetEmployees() []Employee {
 	var employees []Employee
+
 	c := colly.NewCollector(
 		colly.MaxDepth(2))
 
@@ -30,17 +31,19 @@ func GetEmployees() []Employee {
 
 	c.OnHTML(".article_content", func(element *colly.HTMLElement) {
 		var link string
+		var profileLink = element.ChildAttr("img", "src")
 		if strings.Contains(element.ChildAttr("a", "href"), "mailto") {
 			link := element.ChildAttr("a", "href")
 			link = strings.ReplaceAll(link, "mailto:", "")
 		}
-
-		employees = append(employees, Employee{
-			fullName:    element.ChildText("h2"),
-			mailAdress:  link,
-			profilePic:  "https://camelia55.meuse.fr" + element.ChildAttr("img", "src"),
-			description: element.ChildText(".sitotheque p"),
-		})
+		if len(profileLink) != 0 && !strings.Contains(profileLink, "twitter") {
+			employees = append(employees, Employee{
+				FullName:    element.ChildText("h2"),
+				MailAdress:  link,
+				ProfilePic:  "https://camelia55.meuse.fr" + element.ChildAttr("img", "src"),
+				Description: element.ChildText(".sitotheque p"),
+			})
+		}
 	})
 
 	c.OnError(func(response *colly.Response, err error) {
