@@ -29,15 +29,15 @@ func GetEmployees() []Employee {
 	})
 
 	c.OnHTML(".article_content", func(element *colly.HTMLElement) {
-		var links string
+		var link string
 		if strings.Contains(element.ChildAttr("a", "href"), "mailto") {
-			links := element.ChildAttr("a", "href")
-			links = strings.ReplaceAll(links, "mailto:", "")
+			link := element.ChildAttr("a", "href")
+			link = strings.ReplaceAll(link, "mailto:", "")
 		}
 
 		employees = append(employees, Employee{
 			fullName:    element.ChildText("h2"),
-			mailAdress:  links,
+			mailAdress:  link,
 			profilePic:  "https://camelia55.meuse.fr" + element.ChildAttr("img", "src"),
 			description: element.ChildText(".sitotheque p"),
 		})
