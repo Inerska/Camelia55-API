@@ -30,18 +30,15 @@ func GetEmployees() []Employee {
 	})
 
 	c.OnHTML(".article_content", func(element *colly.HTMLElement) {
-		var link string
 		var profileLink = element.ChildAttr("img", "src")
-		if strings.Contains(element.ChildAttr("a", "href"), "mailto") {
-			link := element.ChildAttr("a", "href")
-			link = strings.ReplaceAll(link, "mailto:", "")
-		}
+		var mailndescription = strings.Split(element.ChildText(".sitotheque p"), "\n")
+
 		if len(profileLink) != 0 && !strings.Contains(profileLink, "twitter") {
 			employees = append(employees, Employee{
 				FullName:    element.ChildText("h2"),
-				MailAdress:  link,
+				MailAdress:  mailndescription[0],
 				ProfilePic:  "https://camelia55.meuse.fr" + element.ChildAttr("img", "src"),
-				Description: element.ChildText(".sitotheque p"),
+				Description: mailndescription[1],
 			})
 		}
 	})
